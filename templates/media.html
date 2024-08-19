@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="media-container">
+    <div class="meteor-shower"></div>
+    <div class="text-container">
+        <h1 class="media-text">Media Events</h1>
+        <h2 class="coming-soon">Coming Soon</h2>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2024 MabMediaTV. All Rights Reserved.</p>
+</footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const meteorShower = document.querySelector('.meteor-shower');
+    const numberOfMeteors = 20;
+
+    for (let i = 0; i < numberOfMeteors; i++) {
+        createMeteor();
+    }
+
+    function createMeteor() {
+        const meteor = document.createElement('div');
+        meteor.classList.add('meteor');
+        
+        // Random starting position along the top and left edges
+        const startFromTop = Math.random() < 0.5; // 50% chance to start from top
+        
+        if (startFromTop) {
+            meteor.style.top = `-100px`;
+            meteor.style.left = `${Math.random() * 100}%`;
+        } else {
+            meteor.style.top = `${Math.random() * 100}%`;
+            meteor.style.left = `-100px`;
+        }
+        
+        // Random delay
+        meteor.style.animationDelay = `${Math.random() * 5}s`;
+        
+        // Random duration (between 2 and 4 seconds)
+        meteor.style.animationDuration = `${4 + Math.random() * 2}s`;
+
+        meteorShower.appendChild(meteor);
+
+        // Remove and recreate meteor after animation ends
+        meteor.addEventListener('animationend', function() {
+            meteor.remove();
+            createMeteor();
+        });
+    }
+});
+</script>
+{% endblock %}

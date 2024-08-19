@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MabMedia TV</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">MabMediaTV</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'home_page' %}">Home</a></li>
+            <li><a href="{% url 'media_page' %}">Media</a></li>
+            <li><a href="{% url 'services_page' %}">IT Services</a></li>
+            <li><a href="{% url 'contact_page' %}">Contact</a></li>
+        </ul>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </nav>
+
+    <div class="side-drawer" id="sideDrawer">
+        <ul>
+            <li><a href="{% url 'home_page' %}">Home</a></li>
+            <li><a href="{% url 'media_page' %}">Media</a></li>
+            <li><a href="{% url 'services_page' %}">IT Services</a></li>
+            <li><a href="{% url 'contact_page' %}">Contact</a></li>
+        </ul>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    {% block content %}
+    {% endblock %}
+    
+
+    <script>
+        function toggleMenu() {
+            const sideDrawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('overlay');
+            sideDrawer.classList.toggle('drawer-open');
+            overlay.classList.toggle('drawer-open');
+        }
+    </script>
+</body>
+</html>
