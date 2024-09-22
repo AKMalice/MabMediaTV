@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MabMedia TV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <style>
+        /* Existing Styles */
+        html, body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2c2c2c);
+            color: white;
+        }
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 50px 0;
+        }
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #F5515F, #A1051D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 28px;
+            color: #F5515F;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* Centered PDF Viewer */
+        .pdf-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 32px 0 rgba(131, 40, 40, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #pdf-viewer {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border: none;
+        }
+
+        /* Styled Navigation */
+        #navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        #navigation button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #d0313e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        #navigation button:hover {
+            background-color: #A1051D;
+        }
+        #navigation input {
+            width: 60px;
+            text-align: center;
+            margin: 0 10px;
+            padding: 5px;
+            border: 1px solid #F5515F;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        @media screen and (max-width: 768px) {
+    #navigation {
+        padding: 8px 16px;
+        flex-direction: row; /* Maintain horizontal layout */
+    }
+
+    #navigation button {
+        margin: 5px 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    #navigation input {
+        width: 50px;
+        margin: 5px 8px;
+        padding: 4px;
+        font-size: 14px;
+    }
+}
+
+/* Media Query for Mobile Devices */
+@media screen and (max-width: 480px) {
+    #navigation {
+        flex-direction: column; /* Stack items vertically */
+        padding: 6px 12px;
+    }
+
+    #navigation button {
+        margin: 4px 0;
+        padding: 6px 12px;
+        font-size: 12px;
+        width: 100%; /* Full width buttons */
+    }
+
+    #navigation input {
+        width: 40px;
+        margin: 4px 0;
+        padding: 3px;
+        font-size: 12px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Political Science - Urdu</h1>
+        <h2>Paper 2</h2>
+        <div id="indian-constitution" class="section">
+            <h3>Indian Constitution</h3>
+            <div class="pdf-container">
+                <canvas id="pdf-viewer"></canvas>
+                <div id="navigation">
+                    <button id="prev">Previous</button>
+                    <input type="number" id="current-page" value="1" min="1">
+                    <span> / <span id="total-pages"></span></span>
+                    <button id="next">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const url = '{{ indian_constitution_pdf }}';
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5,
+            canvas = document.getElementById('pdf-viewer'),
+            ctx = canvas.getContext('2d');
+
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({scale: scale});
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            document.getElementById('current-page').value = num;
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById('total-pages').textContent = pdfDoc.numPages;
+
+            renderPage(pageNum);
+        });
+
+        document.getElementById('prev').addEventListener('click', onPrevPage);
+        document.getElementById('next').addEventListener('click', onNextPage);
+        document.getElementById('current-page').addEventListener('change', function() {
+            let desiredPage = parseInt(this.value);
+            if(desiredPage >= 1 && desiredPage <= pdfDoc.numPages){
+                pageNum = desiredPage;
+                queueRenderPage(pageNum);
+            }
+        });
+
+        // Smooth scrolling
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlHash = window.location.hash;
+            if (urlHash) {
+                const section = document.querySelector(urlHash);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -21,7 +21,10 @@ from home import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_page , name="home_page"),
-    path('services/',views.services_page,name="services_page"),
-    path('contact/',views.contact_page,name="contact_page"),
-    path('media/',views.media_page,name="media_page")
+    path('services',views.services_page,name="services_page"),
+    path('contact',views.contact_page,name="contact_page"),
+    path('media',views.media_page,name="media_page"),
+
+    path('urdu/political-science',views.urdu_political_science,name="urdu_political_science"),
+    path('urdu/political-science/paper-2',views.urdu_political_science_paper_2,name="urdu_political_science_paper_2"),
 ]

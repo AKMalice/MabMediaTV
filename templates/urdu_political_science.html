@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MabMedia TV</title>
+    <style>
+        html, body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2c2c2c);
+            color: white;
+        }
+
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 50px 0;
+        }
+
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #F5515F, #A1051D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .paper-section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #F5515F;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: 0.3s ease;
+        }
+
+        a:hover {
+            color: #F5515F;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(131, 40, 40, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px 0 rgba(135, 35, 35, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Political Science - Urdu</h1>
+
+        <div class="paper-section">
+            <h2>Paper 1</h2>
+            <div class="card">
+                <ul>
+                </ul>
+            </div>
+        </div>
+
+        <div class="paper-section">
+            <h2>Paper 2</h2>
+            <div class="card">
+                <ul>
+                    <li><a href="{% url 'urdu_political_science_paper_2' %}">Indian Constitution</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="paper-section">
+            <h2>Paper 3</h2>
+            <div class="card">
+                <ul>
+                    <li><a href="#">Office Management</a></li>
+                    <li><a href="#">Personnel Administration</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
