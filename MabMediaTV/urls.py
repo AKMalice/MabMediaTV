@@ -27,4 +27,5 @@ urlpatterns = [
 
     path('urdu/political-science',views.urdu_political_science,name="urdu_political_science"),
     path('urdu/political-science/paper-2',views.urdu_political_science_paper_2,name="urdu_political_science_paper_2"),
+    path('urdu/political-science/paper-3',views.urdu_political_science_paper_3,name="urdu_political_science_paper_3"),
 ]

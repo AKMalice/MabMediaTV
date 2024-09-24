@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MabMedia TV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <style>
+        /* Existing Styles */
+        html, body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2c2c2c);
+            color: white;
+        }
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 50px 0;
+        }
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #F5515F, #A1051D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 28px;
+            color: #F5515F;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* Centered PDF Viewer */
+        .pdf-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 32px 0 rgba(131, 40, 40, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #pdf-viewer-1, #pdf-viewer-2 {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border: none;
+        }
+
+        /* Styled Navigation */
+        .navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .navigation button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #d0313e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .navigation button:hover {
+            background-color: #A1051D;
+        }
+        .navigation input {
+            width: 60px;
+            text-align: center;
+            margin: 0 10px;
+            padding: 5px;
+            border: 1px solid #F5515F;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Media Query for Mobile Devices */
+        @media screen and (max-width: 480px) {
+            .navigation {
+                flex-direction: column; /* Stack items vertically */
+                padding: 6px 12px;
+            }
+
+            .navigation button {
+                margin: 4px 0;
+                padding: 6px 12px;
+                font-size: 12px;
+                width: 100%; /* Full width buttons */
+            }
+
+            .navigation input {
+                width: 40px;
+                margin: 4px 0;
+                padding: 3px;
+                font-size: 12px;
+            }
+        }
+
+        /* Skeleton Loader Styles */
+        .skeleton-loader {
+            width: 100%;
+            height: 600px; /* Estimate the height of the PDF viewer */
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 15px;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Hide canvas initially to show skeleton loader */
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Political Science - Urdu</h1>
+        
+        <div class="section" id="office-management">
+            <h2>Office Management</h2>
+            <div class="pdf-container">
+                <!-- Skeleton loader -->
+                <div class="skeleton-loader" id="skeleton-loader-1"></div>
+                <canvas id="pdf-viewer-1"></canvas>
+                <div class="navigation">
+                    <button id="prev-1">Previous</button>
+                    <input type="number" id="current-page-1" value="1" min="1">
+                    <span> / <span id="total-pages-1"></span></span>
+                    <button id="next-1">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="personnel-administration">
+            <h2>Personnel Administration</h2>
+            <div class="pdf-container">
+                <!-- Skeleton loader -->
+                <div class="skeleton-loader" id="skeleton-loader-2"></div>
+                <canvas id="pdf-viewer-2"></canvas>
+                <div class="navigation">
+                    <button id="prev-2">Previous</button>
+                    <input type="number" id="current-page-2" value="1" min="1">
+                    <span> / <span id="total-pages-2"></span></span>
+                    <button id="next-2">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const url1 = '{{ office_management_pdf }}';
+        const url2 = '{{ personnel_administration_pdf }}';
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+
+        function renderPDF(url, canvasId, currentPageId, totalPagesId, skeletonLoaderId, onRenderComplete) {
+            let pdfDoc = null,
+                pageNum = 1,
+                pageRendering = false,
+                pageNumPending = null,
+                scale = 1.5,
+                canvas = document.getElementById(canvasId),
+                ctx = canvas.getContext('2d');
+
+            // Show skeleton loader
+            const skeletonLoader = document.getElementById(skeletonLoaderId);
+            
+            function renderPage(num) {
+                pageRendering = true;
+                pdfDoc.getPage(num).then(function(page) {
+                    const viewport = page.getViewport({scale: scale});
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: ctx,
+                        viewport: viewport
+                    };
+                    const renderTask = page.render(renderContext);
+
+                    renderTask.promise.then(function() {
+                        pageRendering = false;
+                        if (pageNumPending !== null) {
+                            renderPage(pageNumPending);
+                            pageNumPending = null;
+                        }
+
+                        // Hide the skeleton loader and show the canvas once the PDF is rendered
+                        if (skeletonLoader) {
+                            skeletonLoader.style.display = 'none';
+                        }
+                        canvas.style.display = 'block';
+
+                        if (onRenderComplete) {
+                            onRenderComplete();
+                        }
+                    });
+                });
+
+                document.getElementById(currentPageId).value = num;
+            }
+
+            function queueRenderPage(num) {
+                if (pageRendering) {
+                    pageNumPending = num;
+                } else {
+                    renderPage(num);
+                }
+            }
+
+            function onPrevPage() {
+                if (pageNum <= 1) {
+                    return;
+                }
+                pageNum--;
+                queueRenderPage(pageNum);
+            }
+
+            function onNextPage() {
+                if (pageNum >= pdfDoc.numPages) {
+                    return;
+                }
+                pageNum++;
+                queueRenderPage(pageNum);
+            }
+
+            pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                document.getElementById(totalPagesId).textContent = pdfDoc.numPages;
+
+                renderPage(pageNum);
+            });
+
+            document.getElementById(`prev-${canvasId.slice(-1)}`).addEventListener('click', onPrevPage);
+            document.getElementById(`next-${canvasId.slice(-1)}`).addEventListener('click', onNextPage);
+            document.getElementById(`current-page-${canvasId.slice(-1)}`).addEventListener('change', function() {
+                let desiredPage = parseInt(this.value);
+                if(desiredPage >= 1 && desiredPage <= pdfDoc.numPages){
+                    pageNum = desiredPage;
+                    queueRenderPage(pageNum);
+                }
+            });
+        }
+
+        // Scroll to section after PDFs are rendered
+        function scrollToHash() {
+            const urlHash = window.location.hash;
+            if (urlHash) {
+                const section = document.querySelector(urlHash);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        let pdfsLoaded = 0;
+        function onPDFRendered() {
+            pdfsLoaded++;
+            if (pdfsLoaded === 2) {
+                scrollToHash();
+            }
+        }
+
+        // Initialize PDFs with skeleton loaders
+        renderPDF(url1, 'pdf-viewer-1', 'current-page-1', 'total-pages-1', 'skeleton-loader-1', onPDFRendered);
+        renderPDF(url2, 'pdf-viewer-2', 'current-page-2', 'total-pages-2', 'skeleton-loader-2', onPDFRendered);
+
+        // Initial scroll if PDFs load quickly
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollToHash();
+        });
+    </script>
+</body>
+</html>
